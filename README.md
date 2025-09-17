@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="https://wallpapercave.com/wp/wp8606834.png" alt="banner" width="1100" height="200" />
+  <img src="https://i.pinimg.com/736x/84/f5/53/84f5533218ae3fbc050349d5d1937d13.jpg" alt="banner" width="1100" height="200" />
 </p>
 
 <h1 align="center">Hey, I'm <b>Saima Afreen Neheta</b> </h1>
