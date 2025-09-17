@@ -24,11 +24,7 @@ Frontend Alchemist | Crafting Pixel-Perfect Web Experiences
 </p>
 
 
-## stats
 
-<p><img align="right" src="https://github-readme-stats.vercel.app/api/top-langs?username=Neheta&show_icons=true&locale=en&layout=compact" alt="Neheta" /></p>
-
-<p> <img align="middle" src="https://github-readme-stats.vercel.app/api?username=Neheta&show_icons=true&locale=en" alt="Neheta" /></p>
 
 
 ---
