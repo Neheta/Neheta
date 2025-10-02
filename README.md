@@ -1,9 +1,6 @@
 <h1 align="center">Hi, I'm Saima Afreen Neheta</h1>
 <h3 align="center">🎨 Turning ideas into stunning web experiences |🧠 Solving problems with code and creativity</h3>
 
-<p align="center">
-  <img src="https://komarev.com/ghpvc/?username=Neheta&label=Profile%20views&color=0e75b6&style=flat" alt="Neheta" />
-</p>
 
 ---
 
@@ -47,11 +44,4 @@
 </table>
 
 ---
-
-### 📫 Connect with Me
-
-<p align="left">
-  <a href="mailto:saima.afreen.neheta.com"><img src="https://img.shields.io/badge/Gmail-D14836?style=flat-square&logo=gmail&logoColor=white" alt="Gmail"/></a>
-  <!-- Add more links like LinkedIn, Portfolio, etc. if available -->
-</p>
 
