@@ -1,5 +1,5 @@
-<h1 align="center">Hi 👋, I'm Saima Afreen Neheta</h1>
-<h3 align="center">🎨 Design-Driven Frontend Developer | 🧠 Problem Solver | 📍 UIU Student</h3>
+<h1 align="center">Hi, I'm Saima Afreen Neheta</h1>
+<h3 align="center">🎨 Turning ideas into stunning web experiences |🧠 Solving problems with code and creativity</h3>
 
 <p align="center">
   <img src="https://komarev.com/ghpvc/?username=Neheta&label=Profile%20views&color=0e75b6&style=flat" alt="Neheta" />
