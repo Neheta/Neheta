@@ -15,7 +15,6 @@ Frontend Alchemist | Crafting Pixel-Perfect Web Experiences
 <p>I turn coffee ☕ + code 💻 into *pixel-perfect web magic*. From minimal UI to complex dashboards, I love designing experiences that feel smooth and engaging.</p>
 
 ---
-
 ## 🛠 Tech Stack
 <p align="center">
 <img src="https://skillicons.dev/icons?i=react,next,html,css,js,ts&theme=light" />
