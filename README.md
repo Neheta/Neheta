@@ -6,7 +6,6 @@
 
 ### 👩‍💻 About Me
 
-- 🎓 Student at **United International University**  
 - 💻 I’m a **Frontend Developer** who loves crafting sleek and interactive web experiences  
 - 🎨 I spend time tweaking **UI designs** or experimenting with **new frameworks**  
 - 🚀 Passionate about **innovation**, **clean code**, and solving real-world problems
