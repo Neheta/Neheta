@@ -28,7 +28,7 @@
 
 ---
 
-### 📊 GitHub Stats & Fun Touch Side by Side
+### 📊 GitHub Stats
 
 <table>
   <tr>
