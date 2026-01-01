@@ -38,7 +38,7 @@
 
 ### 📊 GitHub Stats
 
-<table>
+<!--<table>
   <tr>
     <td width="50%" align="center" valign="middle" style="vertical-align: middle; text-align: center;">
       <img src="https://github-readme-stats.vercel.app/api?username=Neheta&show_icons=true&locale=en&theme=react" alt="GitHub Stats" height="180" />
@@ -49,7 +49,7 @@
       <img src="https://i.pinimg.com/originals/23/d2/5f/23d25f92483d3ece840f54c65a524b0b.gif" width="400" alt="Coding girl animation" />
     </td>
   </tr>
-</table>
+</table>!-->
 
 ---
 
