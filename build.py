@@ -133,23 +133,25 @@ HEART = [
 PETAL = [".#.", "###", ".#."]
 
 # two curly-haired chibis holding hands (girl left, boy right); hands meet in the middle
-COUPLE = [
-    "..HH.HH.HH.....BB.BB...",
-    ".HHhHHhHHH...BBbBBbBBB.",
-    "HHhHHHHHHhH.BBbBBBBBbBB",
-    "HHKKKKKKKHH.BBKKKKKKKBB",
-    "HhKEKKKEKhH..BKEKKKEKB.",
-    "HHKCKKKCKHH...KCKKKCK..",
-    "hHKKKKKKKHh...KKKKKKK..",
-    "HH.DDDDD.HH....SSSSS...",
-    "h..DDDDDD.h...SSSSSSS..",
-    "..DDDDDDDKKKKKSSSSSSS..",
-    "..DDDDDDD.......SSSSS..",
+COUPLE = [  # he's two pixels taller than her
+    "...............BB.BB...",
+    ".............BBbBBbBBB.",
+    "..HH.HH.HH..BBbBBBBBbBB",
+    ".HHhHHhHHH..BBKKKKKKKBB",
+    "HHhHHHHHHhH..BKEKKKEKB.",
+    "HHKKKKKKKHH...KCKKKCK..",
+    "HhKEKKKEKhH...KKKKKKK..",
+    "HHKCKKKCKHH....SSSSS...",
+    "hHKKKKKKKHh...SSSSSSS..",
+    "HH.DDDDD.HH...SSSSSSS..",
+    "h..DDDDDDKKKKKSSSSSSS..",
+    "..DDDDDDD......SSSSS...",
+    "..DDDDDDD......PP.PP...",
     "...K...K.......PP.PP...",
     "...R...R.......MM.MM...",
 ]
 PLUM = "#7E4F7A"
-COUPLE_PAD = 2  # empty rows on top so a raised hand fits
+COUPLE_PAD = 0  # the raised hand fits in the space above her head
 
 # little story, 12s loop: (frame, start s, end s)
 COUPLE_STORY = [
@@ -159,7 +161,7 @@ COUPLE_STORY = [
     ("up", 5.2, 5.55), ("down", 5.55, 5.9),
     ("up", 5.9, 6.25), ("down", 6.25, 6.6),
     ("cool", 6.6, 9.2),    # he looks back at the screen like nothing happened; she keeps smiling at him
-    ("idle", 9.2, 12),
+    ("rest", 9.2, 12),     # both facing the screen, no longer holding hands
 ]
 COUPLE_LOOP = 12
 
@@ -173,36 +175,43 @@ def couple_frames():
         for r, c in pts:
             g[r + COUPLE_PAD][c] = ch
 
+    # her face: eyes (6,3) (6,7), mouth (8,5).  his face: eyes (4,15) (4,19), mouth (6,17)
     def neutral(g, girl=True, boy=True):
         if girl:
-            put(g, "m", (6, 5))
+            put(g, "m", (8, 5))
         if boy:
             put(g, "m", (6, 17))
 
-    def girl_smile(g): put(g, "m", (5, 4), (5, 6), (6, 5))
+    def girl_smile(g): put(g, "m", (7, 4), (7, 6), (8, 5))
     def boy_smile(g): put(g, "m", (5, 16), (5, 18), (6, 17))
 
     def girl_looks_at_him(g):
-        put(g, "K", (4, 3), (4, 7))
-        put(g, "E", (4, 4), (4, 8))
+        put(g, "K", (6, 3), (6, 7))
+        put(g, "E", (6, 4), (6, 8))
 
     def boy_looks_at_her(g):
         put(g, "K", (4, 15), (4, 19))
         put(g, "E", (4, 14), (4, 18))
 
     def girl_happy_eyes(g):  # ^ ^
-        put(g, "K", (4, 3), (4, 7))
-        put(g, "E", (3, 3), (4, 2), (4, 4), (3, 7), (4, 6), (4, 8))
+        put(g, "K", (6, 3), (6, 7))
+        put(g, "E", (5, 3), (6, 2), (6, 4), (5, 7), (6, 6), (6, 8))
+
+    def let_go(g, his_hand_down=True):
+        put(g, "h", (10, 10))                    # her curl comes back where her hand was
+        put(g, ".", (10, 11), (10, 12))
+        if not his_hand_down:
+            put(g, ".", (10, 13))
 
     def pat(g, up):
-        put(g, ".", (9, 10), (9, 11), (9, 12), (9, 13))      # let go of her hand
-        put(g, "S", (7, 14), (6, 13), (5, 12), (4, 11), (3, 11), (2, 11), (1, 11))
+        let_go(g, his_hand_down=False)
+        put(g, "S", (7, 14), (6, 13), (5, 12), (4, 11), (3, 11))
         # a small rounded hand resting on (down) or just above (up) her curls
         if up:
-            put(g, "S", (0, 11))
-            put(g, "K", (-1, 10), (-2, 7), (-2, 8), (-2, 9), (-1, 6), (-1, 7), (-1, 8), (-1, 9))
+            put(g, "S", (2, 11))
+            put(g, "K", (1, 10), (0, 7), (0, 8), (0, 9), (1, 6), (1, 7), (1, 8), (1, 9))
         else:
-            put(g, "K", (0, 10), (-1, 7), (-1, 8), (-1, 9), (0, 6), (0, 7), (0, 8), (0, 9))
+            put(g, "K", (2, 10), (1, 7), (1, 8), (1, 9), (2, 6), (2, 7), (2, 8), (2, 9))
 
     frames = {}
     g = grid(); neutral(g); frames["idle"] = g
@@ -210,7 +219,8 @@ def couple_frames():
     for name, up in (("up", True), ("down", False)):
         g = grid(); pat(g, up); girl_happy_eyes(g); girl_smile(g); boy_looks_at_her(g); boy_smile(g)
         frames[name] = g
-    g = grid(); girl_looks_at_him(g); girl_smile(g); neutral(g, girl=False); frames["cool"] = g
+    g = grid(); let_go(g); girl_looks_at_him(g); girl_smile(g); neutral(g, girl=False); frames["cool"] = g
+    g = grid(); let_go(g); neutral(g); frames["rest"] = g
     return {k: ["".join(r) for r in v] for k, v in frames.items()}
 
 
