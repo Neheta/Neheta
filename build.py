@@ -470,12 +470,21 @@ def banner(p):
 
     # floating cat (bottom right) and a little plant (bottom left)
     cx, cy = W - 30 - 66, H - 30 - 54 - 10
-    body.append(f'<rect class="shadow" x="{cx + 8}" y="{cy + 62}" width="50" height="4" fill="{BORDER}"/>')
-    body.append(f'<g class="float">{sprite(CAT, cx, cy, 6, {"R": ROSE, "P": BLUSH, "E": BG, "B": PINK})}</g>')
-    css.append(".float{animation:float 5s ease-in-out infinite}"
-               "@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}"
-               ".shadow{transform-box:fill-box;transform-origin:center;animation:shadow 5s ease-in-out infinite}"
-               "@keyframes shadow{0%,100%{transform:scaleX(1);opacity:.9}50%{transform:scaleX(.7);opacity:.45}}")
+    if p.get("couple"):
+        # bottom-right, in the cat's spot: the little animated couple, standing on a soft shadow
+        cw = len(COUPLE[0]) * 3
+        qx, bottom = W - 30 - cw, cy + 54
+        body.append(f'<rect x="{qx + 4}" y="{bottom + 8}" width="{cw - 8}" height="4" fill="{BORDER}"/>')
+        ccss, cbody, _ = couple_scene(qx, bottom)
+        css.append(ccss)
+        body.append(cbody)
+    else:
+        body.append(f'<rect class="shadow" x="{cx + 8}" y="{cy + 62}" width="50" height="4" fill="{BORDER}"/>')
+        body.append(f'<g class="float">{sprite(CAT, cx, cy, 6, {"R": ROSE, "P": BLUSH, "E": BG, "B": PINK})}</g>')
+        css.append(".float{animation:float 5s ease-in-out infinite}"
+                   "@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}"
+                   ".shadow{transform-box:fill-box;transform-origin:center;animation:shadow 5s ease-in-out infinite}"
+                   "@keyframes shadow{0%,100%{transform:scaleX(1);opacity:.9}50%{transform:scaleX(.7);opacity:.45}}")
     body.append(sprite(PLANT, 30, H - 30 - 35, 5, {"G": ACCENT, "R": ROSE, "P": SOFT}))
 
     body.append("</g>")
@@ -516,21 +525,8 @@ def about_card(p):
             lines = lines[:2]
         ys.append(y)
         body.append(ptext_el(fit(label.upper(), 11, "about label"), pad, y, 2, PINK))
-        tx = pad + 150
-        with_couple = p.get("couple") and i == len(rows) - 1
-        if not with_couple:
-            for j, line in enumerate(lines):
-                body.append(sans(line, tx, y + 13 + j * 21, 15, TEXT))
-        else:
-            # the last row ends with the little animated couple, just past the end of its text.
-            # textLength pins each line's width so the couple sits in the same spot on every OS.
-            lengths = [round(len(line) * 6.9) for line in lines]
-            for j, (line, length) in enumerate(zip(lines, lengths)):
-                body.append(sans(line, tx, y + 13 + j * 21, 15, TEXT, length=length))
-            cx = min(tx + max(lengths) + 14, W - pad - len(COUPLE[0]) * 3)
-            ccss, cbody, _ = couple_scene(cx, y + 13 + (len(lines) - 1) * 21 + 4)
-            css += ccss
-            body.append(cbody)
+        for j, line in enumerate(lines):
+            body.append(sans(line, pad + 150, y + 13 + j * 21, 15, TEXT))
         content_bottom = y + 14 + 21 * (len(lines) - 1)
         y += row_h + 21 * (len(lines) - 1)
     mx = 520
@@ -542,7 +538,7 @@ def about_card(p):
         on = "".join(f"M{mx + 126 + j * 12} {y}h8v14h-8z" for j in range(v))
         off = "".join(f"M{mx + 126 + j * 12} {y}h8v14h-8z" for j in range(v, 10))
         body.append(f'<path fill="{PINK}" d="{on}"/><path fill="{BORDER}" d="{off}"/>')
-    H = content_bottom + pad + (4 if p.get("couple") else 0)
+    H = content_bottom + pad
     label = (p.get("bio", "") + " " + "; ".join(f"{a}: {b}".replace("\n", " ") for a, b in rows)).strip()
     return svg_doc(W, H, panel(W, H, SURFACE) + "".join(body), label, css)
 
