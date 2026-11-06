@@ -144,7 +144,7 @@ COUPLE = [  # he's two pixels taller than her
     "HHKCKKKCKHH....SSSSS...",
     "hHKKKKKKKHh...SSSSSSS..",
     "HH.DDDDD.HH...SSSSSSS..",
-    "h..DDDDDDKKKKKSSSSSSS..",
+    "h..DDDDDDKh..KSSSSSSS..",
     "..DDDDDDD......SSSSS...",
     "..DDDDDDD......PP.PP...",
     "...K...K.......PP.PP...",
@@ -155,13 +155,13 @@ COUPLE_PAD = 0  # the raised hand fits in the space above her head
 
 # little story, 12s loop: (frame, start s, end s)
 COUPLE_STORY = [
-    ("idle", 0, 3),        # both face the screen, holding hands
+    ("idle", 0, 3),        # both face the screen, hands by their sides
     ("look", 3, 4.5),      # they look at each other and smile
     ("up", 4.5, 4.85), ("down", 4.85, 5.2),    # he pats her head (x3)
     ("up", 5.2, 5.55), ("down", 5.55, 5.9),
     ("up", 5.9, 6.25), ("down", 6.25, 6.6),
     ("cool", 6.6, 9.2),    # he looks back at the screen like nothing happened; she keeps smiling at him
-    ("rest", 9.2, 12),     # both facing the screen, no longer holding hands
+    ("rest", 9.2, 12),     # both facing the screen again
 ]
 COUPLE_LOOP = 12
 
@@ -509,24 +509,26 @@ def about_card(p):
     for i, (label, value) in enumerate(rows):
         # long values wrap to a second line; rows below the meters can use the full width
         width = 42 if len(ys) < len(meters) else 74
-        lines = textwrap.wrap(value, width) or [""]
+        # "\n" in a value starts a new line on purpose; long lines also wrap on their own
+        lines = [l for part in value.split("\n") for l in (textwrap.wrap(part, width) or [""])]
         if len(lines) > 2:
             WARN.add(f"about value for {label!r} was cut to 2 lines")
             lines = lines[:2]
         ys.append(y)
         body.append(ptext_el(fit(label.upper(), 11, "about label"), pad, y, 2, PINK))
-        for j, line in enumerate(lines):
-            tx, ty = pad + 150, y + 13 + j * 21
-            inline = p.get("couple") and i == len(rows) - 1 and j == len(lines) - 1
-            if not inline:
-                body.append(sans(line, tx, ty, 15, TEXT))
-                continue
-            # the last line ends with the little animated couple, right after the text.
-            # textLength pins the text width so the couple sits in the same spot on every OS.
-            length = round(len(line) * 6.9)
-            body.append(sans(line, tx, ty, 15, TEXT, length=length))
-            cx = min(tx + length + 12, W - pad - len(COUPLE[0]) * 3)
-            ccss, cbody, _ = couple_scene(cx, ty + 4)
+        tx = pad + 150
+        with_couple = p.get("couple") and i == len(rows) - 1
+        if not with_couple:
+            for j, line in enumerate(lines):
+                body.append(sans(line, tx, y + 13 + j * 21, 15, TEXT))
+        else:
+            # the last row ends with the little animated couple, just past the end of its text.
+            # textLength pins each line's width so the couple sits in the same spot on every OS.
+            lengths = [round(len(line) * 6.9) for line in lines]
+            for j, (line, length) in enumerate(zip(lines, lengths)):
+                body.append(sans(line, tx, y + 13 + j * 21, 15, TEXT, length=length))
+            cx = min(tx + max(lengths) + 14, W - pad - len(COUPLE[0]) * 3)
+            ccss, cbody, _ = couple_scene(cx, y + 13 + (len(lines) - 1) * 21 + 4)
             css += ccss
             body.append(cbody)
         content_bottom = y + 14 + 21 * (len(lines) - 1)
@@ -541,7 +543,7 @@ def about_card(p):
         off = "".join(f"M{mx + 126 + j * 12} {y}h8v14h-8z" for j in range(v, 10))
         body.append(f'<path fill="{PINK}" d="{on}"/><path fill="{BORDER}" d="{off}"/>')
     H = content_bottom + pad + (4 if p.get("couple") else 0)
-    label = (p.get("bio", "") + " " + "; ".join(f"{a}: {b}" for a, b in rows)).strip()
+    label = (p.get("bio", "") + " " + "; ".join(f"{a}: {b}".replace("\n", " ") for a, b in rows)).strip()
     return svg_doc(W, H, panel(W, H, SURFACE) + "".join(body), label, css)
 
 
