@@ -228,7 +228,11 @@ def couple_frames():
     g = grid(); happy(g); frames["idle"] = g
     g = grid(); happy(g); extra_blush(g); frames["look"] = g
     for name, up in (("up", True), ("down", False)):
-        g = grid(); pat(g, up); happy(g); extra_blush(g)
+        # during the head pat their eyes open and they look at each other, still smiling
+        g = grid(); pat(g, up)
+        girl_looks_at_him(g); girl_smile(g)
+        boy_looks_at_her(g); boy_smile(g)
+        extra_blush(g)
         frames[name] = g
     g = grid(); let_go(g); happy(g); frames["cool"] = g
     g = grid(); let_go(g); happy(g); frames["rest"] = g
