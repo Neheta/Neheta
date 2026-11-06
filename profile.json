@@ -6,6 +6,7 @@
   "username": "Neheta",
   "role": "ai enthusiast & full-stack developer",
   "status": "player 1",
+  "couple": true,
   "bio": "an ai enthusiast who builds systems, does research and ships full-stack apps end to end.",
 
   "typing_lines": [

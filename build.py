@@ -132,6 +132,25 @@ HEART = [
 ]
 PETAL = [".#.", "###", ".#."]
 
+# two curly-haired chibis holding hands (girl left, boy right); hands meet in the middle
+COUPLE = [
+    "..HH.HH.HH.....BB.BB...",
+    ".HHhHHhHHH...BBbBBbBBB.",
+    "HHhHHHHHHhH.BBbBBBBBbBB",
+    "HHKKKKKKKHH.BBKKKKKKKBB",
+    "HhKEKKKEKhH..BKEKKKEKB.",
+    "HHKCKKKCKHH...KCKKKCK..",
+    "hHKKKKKKKHh...KKKKKKK..",
+    "HH.DDDDD.HH....SSSSS...",
+    "h..DDDDDD.h...SSSSSSS..",
+    "..DDDDDDDKKKKKSSSSSSS..",
+    "..DDDDDDD.......SSSSS..",
+    "...K...K.......PP.PP...",
+    "...R...R.......MM.MM...",
+]
+PLUM = "#7E4F7A"
+LITTLE_HEART = [".#.#.", "#####", ".###.", "..#.."]
+
 
 def apply_theme(name):
     if name not in THEMES:
@@ -294,6 +313,8 @@ def banner(p):
         x, y = rnd.randrange(20, W - 24, 4), rnd.randrange(16, H - 20, 4)
         if 90 < x < 710 and 64 < y < 250:
             continue
+        if (x < 120 or x > 680) and y > 180:  # keep the corner sprites clear
+            continue
         sz = rnd.choice([2, 2, 4])
         col = rnd.choice([BLUSH, ACCENT, SOFT])
         body.append(f'<rect class="tw" x="{x}" y="{y}" width="{sz}" height="{sz}" fill="{col}" '
@@ -348,7 +369,25 @@ def banner(p):
                "@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}"
                ".shadow{transform-box:fill-box;transform-origin:center;animation:shadow 5s ease-in-out infinite}"
                "@keyframes shadow{0%,100%{transform:scaleX(1);opacity:.9}50%{transform:scaleX(.7);opacity:.45}}")
-    body.append(sprite(PLANT, 30, H - 30 - 35, 5, {"G": ACCENT, "R": ROSE, "P": SOFT}))
+    if p.get("couple"):
+        # bottom-left: two curly-haired chibis holding hands, swaying gently, with a little heart now and then
+        s, qx = 3, 30
+        rows, cols = len(COUPLE), len(COUPLE[0])
+        qy = cy + 54 - rows * s  # bottoms line up with the cat
+        palette = {"H": ROSE, "h": PINK, "B": PLUM, "b": ROSE, "K": BLUSH, "E": BG, "C": PINK,
+                   "D": PINK, "S": ACCENT, "P": MUTED, "R": ROSE, "M": PLUM}
+        body.append(f'<rect class="shadow2" x="{qx + 4}" y="{qy + rows * s + 8}" width="{cols * s - 8}" height="4" fill="{BORDER}"/>')
+        body.append(f'<g class="sway">{sprite(COUPLE, qx, qy, s, palette)}'
+                    f'<g class="lheart">{sprite(LITTLE_HEART, qx + (cols * s) // 2 - 5, qy - 12, 2, {"#": PINK})}</g></g>')
+        css.append(".sway{animation:sway 6s ease-in-out infinite}"
+                   "@keyframes sway{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}"
+                   ".shadow2{transform-box:fill-box;transform-origin:center;animation:shadow2 6s ease-in-out infinite}"
+                   "@keyframes shadow2{0%,100%{transform:scaleX(1);opacity:.9}50%{transform:scaleX(.85);opacity:.6}}"
+                   ".lheart{opacity:0;animation:lheart 8s ease-in-out infinite}"
+                   "@keyframes lheart{0%,50%{opacity:0;transform:translateY(4px)}62%{opacity:1}"
+                   "92%{opacity:0;transform:translateY(-16px)}100%{opacity:0;transform:translateY(-16px)}}")
+    else:
+        body.append(sprite(PLANT, 30, H - 30 - 35, 5, {"G": ACCENT, "R": ROSE, "P": SOFT}))
 
     body.append("</g>")
     label = f"{p['name']}: {p['role']}. " + " / ".join(lines)
