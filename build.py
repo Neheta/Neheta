@@ -213,14 +213,25 @@ def couple_frames():
         else:
             put(g, "K", (2, 10), (1, 7), (1, 8), (1, 9), (2, 6), (2, 7), (2, 8), (2, 9))
 
+    def boy_happy_eyes(g):  # ^ ^
+        put(g, "K", (4, 15), (4, 19))
+        put(g, "E", (3, 15), (4, 14), (4, 16), (3, 19), (4, 18), (4, 20))
+
+    def happy(g):  # they always smile, with happy ^ ^ eyes
+        girl_happy_eyes(g); girl_smile(g)
+        boy_happy_eyes(g); boy_smile(g)
+
+    def extra_blush(g):  # rosier cheeks for the heart moment
+        put(g, "C", (7, 2), (7, 8), (5, 14), (5, 20))
+
     frames = {}
-    g = grid(); neutral(g); frames["idle"] = g
-    g = grid(); girl_looks_at_him(g); boy_looks_at_her(g); girl_smile(g); boy_smile(g); frames["look"] = g
+    g = grid(); happy(g); frames["idle"] = g
+    g = grid(); happy(g); extra_blush(g); frames["look"] = g
     for name, up in (("up", True), ("down", False)):
-        g = grid(); pat(g, up); girl_happy_eyes(g); girl_smile(g); boy_looks_at_her(g); boy_smile(g)
+        g = grid(); pat(g, up); happy(g); extra_blush(g)
         frames[name] = g
-    g = grid(); let_go(g); girl_looks_at_him(g); girl_smile(g); neutral(g, girl=False); frames["cool"] = g
-    g = grid(); let_go(g); neutral(g); frames["rest"] = g
+    g = grid(); let_go(g); happy(g); frames["cool"] = g
+    g = grid(); let_go(g); happy(g); frames["rest"] = g
     return {k: ["".join(r) for r in v] for k, v in frames.items()}
 
 
