@@ -1,0 +1,85 @@
+{
+  "theme": "pink",
+
+  "name": "neheta",
+  "initials": "SN",
+  "username": "Neheta",
+  "role": "ai enthusiast & full-stack developer",
+  "status": "player 1",
+  "bio": "an ai enthusiast who builds systems, does research and ships full-stack apps end to end.",
+
+  "typing_lines": [
+    "hi, i'm neheta!",
+    "ai enthusiast & researcher",
+    "building systems that scale",
+    "full-stack, front to back"
+  ],
+
+  "about": [
+    ["class", "ai enthusiast & full-stack dev"],
+    ["level", "shipping on github since 2024"],
+    ["quest", "researching & building ai systems"],
+    ["growing", "machine learning & system design"],
+    ["fun fact", "I've built a bakery & coffee shop online, cant wait to build em irl! <3"]
+  ],
+
+  "meters": [
+    ["curiosity", 10],
+    ["research", 8],
+    ["coffee", 7]
+  ],
+
+  "stack": [
+    { "name": "html", "logo": "html5" },
+    { "name": "css", "logo": "css" },
+    { "name": "javascript", "logo": "javascript" },
+    { "name": "typescript", "logo": "typescript" },
+    { "name": "react", "logo": "react" },
+    { "name": "vue", "logo": "vuedotjs" },
+    { "name": "redux", "logo": "redux" },
+    { "name": "tailwind", "logo": "tailwindcss" },
+    { "name": "bootstrap", "logo": "bootstrap" },
+    { "name": "python", "logo": "python" },
+    { "name": "java", "logo": "openjdk" },
+    { "name": "c", "logo": "c" },
+    { "name": "c++", "logo": "cplusplus" },
+    { "name": "mysql", "logo": "mysql" },
+    { "name": "git", "logo": "git" }
+  ],
+
+  "projects": [
+    {
+      "title": "bakecake",
+      "description": "a modern bakery app for browsing treats and ordering custom cakes, with a clean, responsive ui.",
+      "tags": ["react", "tailwind", "vite"],
+      "url": "https://bakecake.vercel.app"
+    },
+    {
+      "title": "artistian brew",
+      "description": "a cozy coffee shop website crafted with passion, typescript and tailwind css.",
+      "tags": ["typescript", "tailwind"],
+      "url": "https://artistian-brew.vercel.app"
+    },
+    {
+      "title": "bentogrid",
+      "description": "a bento-style grid layout built from scratch with semantic html and css.",
+      "tags": ["html", "css"],
+      "url": "https://github.com/Neheta/Bentogrid"
+    },
+    {
+      "title": "netflix clone",
+      "description": "a responsive netflix landing page clone built with html and css.",
+      "tags": ["html", "css", "responsive"],
+      "url": "https://neheta.github.io/Netflix-Clone/"
+    }
+  ],
+
+  "links": [],
+
+  "footer_title": "thanks for visiting",
+  "footer_subtitle": "press start to collaborate >",
+
+  "show_stats": true,
+  "show_streak": true,
+  "show_snake": true
+}
