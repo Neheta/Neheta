@@ -149,6 +149,102 @@ COUPLE = [
     "...R...R.......MM.MM...",
 ]
 PLUM = "#7E4F7A"
+COUPLE_PAD = 2  # empty rows on top so a raised hand fits
+
+# little story, 12s loop: (frame, start s, end s)
+COUPLE_STORY = [
+    ("idle", 0, 3),        # both face the screen, holding hands
+    ("look", 3, 4.5),      # they look at each other and smile
+    ("up", 4.5, 4.85), ("down", 4.85, 5.2),    # he pats her head (x3)
+    ("up", 5.2, 5.55), ("down", 5.55, 5.9),
+    ("up", 5.9, 6.25), ("down", 6.25, 6.6),
+    ("cool", 6.6, 9.2),    # he looks back at the screen like nothing happened; she keeps smiling at him
+    ("idle", 9.2, 12),
+]
+COUPLE_LOOP = 12
+
+
+def couple_frames():
+    """Returns {frame name: rows} built from COUPLE plus small edits per frame (row/col in COUPLE coords)."""
+    def grid():
+        return [list("." * len(COUPLE[0])) for _ in range(COUPLE_PAD)] + [list(r) for r in COUPLE]
+
+    def put(g, ch, *pts):
+        for r, c in pts:
+            g[r + COUPLE_PAD][c] = ch
+
+    def neutral(g, girl=True, boy=True):
+        if girl:
+            put(g, "m", (6, 5))
+        if boy:
+            put(g, "m", (6, 17))
+
+    def girl_smile(g): put(g, "m", (5, 4), (5, 6), (6, 5))
+    def boy_smile(g): put(g, "m", (5, 16), (5, 18), (6, 17))
+
+    def girl_looks_at_him(g):
+        put(g, "K", (4, 3), (4, 7))
+        put(g, "E", (4, 4), (4, 8))
+
+    def boy_looks_at_her(g):
+        put(g, "K", (4, 15), (4, 19))
+        put(g, "E", (4, 14), (4, 18))
+
+    def girl_happy_eyes(g):  # ^ ^
+        put(g, "K", (4, 3), (4, 7))
+        put(g, "E", (3, 3), (4, 2), (4, 4), (3, 7), (4, 6), (4, 8))
+
+    def pat(g, up):
+        put(g, ".", (9, 10), (9, 11), (9, 12), (9, 13))      # let go of her hand
+        put(g, "S", (7, 14), (6, 13), (5, 12), (4, 11), (3, 11), (2, 11), (1, 11))
+        # a small rounded hand resting on (down) or just above (up) her curls
+        if up:
+            put(g, "S", (0, 11))
+            put(g, "K", (-1, 10), (-2, 7), (-2, 8), (-2, 9), (-1, 6), (-1, 7), (-1, 8), (-1, 9))
+        else:
+            put(g, "K", (0, 10), (-1, 7), (-1, 8), (-1, 9), (0, 6), (0, 7), (0, 8), (0, 9))
+
+    frames = {}
+    g = grid(); neutral(g); frames["idle"] = g
+    g = grid(); girl_looks_at_him(g); boy_looks_at_her(g); girl_smile(g); boy_smile(g); frames["look"] = g
+    for name, up in (("up", True), ("down", False)):
+        g = grid(); pat(g, up); girl_happy_eyes(g); girl_smile(g); boy_looks_at_her(g); boy_smile(g)
+        frames[name] = g
+    g = grid(); girl_looks_at_him(g); girl_smile(g); neutral(g, girl=False); frames["cool"] = g
+    return {k: ["".join(r) for r in v] for k, v in frames.items()}
+
+
+def couple_scene(x, bottom, s=3, uid="cp"):
+    """Frame-by-frame pixel animation, like a gif, done with CSS so it stays a crisp SVG."""
+    frames = couple_frames()
+    rows, cols = len(COUPLE) + COUPLE_PAD, len(COUPLE[0])
+    y = bottom - rows * s
+    palette = {"H": ROSE, "h": PINK, "B": PLUM, "b": ROSE, "K": BLUSH, "E": BG, "C": PINK,
+               "D": PINK, "S": ACCENT, "P": MUTED, "R": ROSE, "M": PLUM, "m": PLUM}
+    T, eps = COUPLE_LOOP, 0.01
+    css, body = [], []
+    for name, g in frames.items():
+        pts = []
+        for n, a, b in COUPLE_STORY:
+            if n != name:
+                continue
+            pa, pb = a / T * 100, b / T * 100
+            pts += [(pa - eps, 0), (pa, 1)] if pa > 0 else [(0, 1)]
+            pts += [(pb - eps, 1), (pb, 0)] if pb < 100 else [(100, 1)]
+        if not any(p == 0 for p, _ in pts):
+            pts.append((0, 0))
+        if not any(p == 100 for p, _ in pts):
+            pts.append((100, 0))
+        kf = "".join(f"{p:.3f}%{{opacity:{v}}}" for p, v in sorted(pts))
+        css.append(f"@keyframes {uid}{name}{{{kf}}}"
+                   f".{uid}{name}{{opacity:{1 if name == 'idle' else 0};animation:{uid}{name} {T}s linear infinite}}")
+        body.append(f'<g class="{uid}{name}">{sprite(g, x, y, s, palette)}</g>')
+    hx, hy = x + (cols * s) // 2 - 5, y - 4
+    body.append(f'<g class="{uid}heart">{sprite(LITTLE_HEART, hx, hy, 2, {"#": PINK})}</g>')
+    css.append(f".{uid}heart{{opacity:0;animation:{uid}heart {T}s ease-out infinite}}"
+               f"@keyframes {uid}heart{{0%,25%{{opacity:0;transform:translateY(3px)}}28%{{opacity:1}}"
+               f"40%,100%{{opacity:0;transform:translateY(-12px)}}}}")
+    return "".join(css), "".join(body), cols * s
 LITTLE_HEART = [".#.#.", "#####", ".###.", "..#.."]
 
 
@@ -221,9 +317,10 @@ def dots(x1, x2, y, size=4, gap=12, fill=None):
     return f'<path fill="{fill or BORDER}" d="{d}"/>'
 
 
-def sans(text, x, y, size, fill, anchor="start", weight="400"):
+def sans(text, x, y, size, fill, anchor="start", weight="400", length=None):
+    fixed = f' textLength="{length}" lengthAdjust="spacingAndGlyphs"' if length else ""
     return (f'<text x="{x}" y="{y}" fill="{fill}" font-family="{SANS}" font-size="{size}" '
-            f'font-weight="{weight}" text-anchor="{anchor}">{escape(text)}</text>')
+            f'font-weight="{weight}" text-anchor="{anchor}"{fixed}>{escape(text)}</text>')
 
 
 def svg_doc(w, h, body, label, css="", reduced=""):
@@ -369,25 +466,7 @@ def banner(p):
                "@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}"
                ".shadow{transform-box:fill-box;transform-origin:center;animation:shadow 5s ease-in-out infinite}"
                "@keyframes shadow{0%,100%{transform:scaleX(1);opacity:.9}50%{transform:scaleX(.7);opacity:.45}}")
-    if p.get("couple"):
-        # bottom-left: two curly-haired chibis holding hands, swaying gently, with a little heart now and then
-        s, qx = 3, 30
-        rows, cols = len(COUPLE), len(COUPLE[0])
-        qy = cy + 54 - rows * s  # bottoms line up with the cat
-        palette = {"H": ROSE, "h": PINK, "B": PLUM, "b": ROSE, "K": BLUSH, "E": BG, "C": PINK,
-                   "D": PINK, "S": ACCENT, "P": MUTED, "R": ROSE, "M": PLUM}
-        body.append(f'<rect class="shadow2" x="{qx + 4}" y="{qy + rows * s + 8}" width="{cols * s - 8}" height="4" fill="{BORDER}"/>')
-        body.append(f'<g class="sway">{sprite(COUPLE, qx, qy, s, palette)}'
-                    f'<g class="lheart">{sprite(LITTLE_HEART, qx + (cols * s) // 2 - 5, qy - 12, 2, {"#": PINK})}</g></g>')
-        css.append(".sway{animation:sway 6s ease-in-out infinite}"
-                   "@keyframes sway{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}"
-                   ".shadow2{transform-box:fill-box;transform-origin:center;animation:shadow2 6s ease-in-out infinite}"
-                   "@keyframes shadow2{0%,100%{transform:scaleX(1);opacity:.9}50%{transform:scaleX(.85);opacity:.6}}"
-                   ".lheart{opacity:0;animation:lheart 8s ease-in-out infinite}"
-                   "@keyframes lheart{0%,50%{opacity:0;transform:translateY(4px)}62%{opacity:1}"
-                   "92%{opacity:0;transform:translateY(-16px)}100%{opacity:0;transform:translateY(-16px)}}")
-    else:
-        body.append(sprite(PLANT, 30, H - 30 - 35, 5, {"G": ACCENT, "R": ROSE, "P": SOFT}))
+    body.append(sprite(PLANT, 30, H - 30 - 35, 5, {"G": ACCENT, "R": ROSE, "P": SOFT}))
 
     body.append("</g>")
     label = f"{p['name']}: {p['role']}. " + " / ".join(lines)
@@ -415,8 +494,9 @@ def about_card(p):
         top += 34
         body.append(dots(pad, W - pad, top, size=4, gap=8))
         top += 24
+    css = ""
     ys, y, content_bottom = [], top, top
-    for label, value in rows:
+    for i, (label, value) in enumerate(rows):
         # long values wrap to a second line; rows below the meters can use the full width
         width = 42 if len(ys) < len(meters) else 74
         lines = textwrap.wrap(value, width) or [""]
@@ -426,7 +506,19 @@ def about_card(p):
         ys.append(y)
         body.append(ptext_el(fit(label.upper(), 11, "about label"), pad, y, 2, PINK))
         for j, line in enumerate(lines):
-            body.append(sans(line, pad + 150, y + 13 + j * 21, 15, TEXT))
+            tx, ty = pad + 150, y + 13 + j * 21
+            inline = p.get("couple") and i == len(rows) - 1 and j == len(lines) - 1
+            if not inline:
+                body.append(sans(line, tx, ty, 15, TEXT))
+                continue
+            # the last line ends with the little animated couple, right after the text.
+            # textLength pins the text width so the couple sits in the same spot on every OS.
+            length = round(len(line) * 6.9)
+            body.append(sans(line, tx, ty, 15, TEXT, length=length))
+            cx = min(tx + length + 12, W - pad - len(COUPLE[0]) * 3)
+            ccss, cbody, _ = couple_scene(cx, ty + 4)
+            css += ccss
+            body.append(cbody)
         content_bottom = y + 14 + 21 * (len(lines) - 1)
         y += row_h + 21 * (len(lines) - 1)
     mx = 520
@@ -438,9 +530,9 @@ def about_card(p):
         on = "".join(f"M{mx + 126 + j * 12} {y}h8v14h-8z" for j in range(v))
         off = "".join(f"M{mx + 126 + j * 12} {y}h8v14h-8z" for j in range(v, 10))
         body.append(f'<path fill="{PINK}" d="{on}"/><path fill="{BORDER}" d="{off}"/>')
-    H = content_bottom + pad
+    H = content_bottom + pad + (4 if p.get("couple") else 0)
     label = (p.get("bio", "") + " " + "; ".join(f"{a}: {b}" for a, b in rows)).strip()
-    return svg_doc(W, H, panel(W, H, SURFACE) + "".join(body), label)
+    return svg_doc(W, H, panel(W, H, SURFACE) + "".join(body), label, css)
 
 
 # ── project card ────────────────────────────────────────────────────────────
